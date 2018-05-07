@@ -1,0 +1,53 @@
+{
+  "env": {
+    "test": {
+      "presets": [
+        [
+          "env",
+          {
+            "targets": {
+              "node": "6",
+              "browsers": [
+                "last 30 versions",
+                "chrome >= 30",
+                "firefox >= 25",
+                "safari >= 7",
+                "ie >= 10",
+                "edge >= 12"
+              ]
+            }
+          }
+        ]
+      ],
+      "plugins": [
+        "istanbul",
+        "transform-object-rest-spread"
+      ]
+    },
+    "production": {
+      "presets": [
+        [
+          "env",
+          {
+            "targets": {
+              "node": "6",
+              "browsers": [
+                "last 30 versions",
+                "chrome >= 30",
+                "firefox >= 25",
+                "safari >= 7",
+                "ie >= 10",
+                "edge >= 12"
+              ]
+            },
+            "modules": false
+          }
+        ]
+      ],
+      "plugins": [
+        "transform-object-rest-spread",
+        "external-helpers"
+      ]
+    }
+  }
+}

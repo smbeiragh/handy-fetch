@@ -1,0 +1,63 @@
+{
+  "name": "handy-fetch",
+  "version": "1.0.0",
+  "main": "build/handy_fetch.js",
+  "module": "build/handy_fetch.es.js",
+  "author": "smbeiragh <smbeiragh@gmail.com>",
+  "keywords": [
+    "fetch",
+    "xhr"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smbeiragh/handy-fetch.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "NODE_ENV=test nyc mocha",
+    "coverage": "NODE_ENV=test nyc --reporter lcov --reporter text mocha",
+    "rollup": "NODE_ENV=production rollup -c",
+    "lint": "eslint src test",
+    "lint:fix": "eslint src test --fix",
+    "prepare": "yarn run rollup",
+    "prepublishOnly": "yarn run rollup",
+    "commit": "git-cz"
+  },
+  "files": [
+    "build/handy_fetch.js",
+    "build/handy_fetch.es.js"
+  ],
+  "engines": {
+    "node": ">=6"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-istanbul": "^4.1.6",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "chai-spies": "^1.0.0",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.1.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0",
+    "mocha": "^5.1.1",
+    "nock": "^9.2.5",
+    "node-fetch": "^2.1.2",
+    "nyc": "^11.7.1",
+    "rollup": "^0.58.2",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-uglify": "^3.0.0"
+  },
+  "dependencies": {},
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

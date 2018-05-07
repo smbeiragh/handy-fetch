@@ -1,0 +1,7 @@
+.idea
+node_modules
+build
+babel_cache
+yarn-error.log
+.nyc_output
+coverage
