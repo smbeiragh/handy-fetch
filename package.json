@@ -1,6 +1,6 @@
 {
   "name": "handy-fetch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "build/handy_fetch.js",
   "module": "build/handy_fetch.es.js",
   "author": "smbeiragh <smbeiragh@gmail.com>",
