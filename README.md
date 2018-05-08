@@ -128,7 +128,7 @@ fetch.post('http://some-json.api', {
 #### Chaining helper methods
 You can call as many as helpers you want using chaining pattern.
 Post JSON as easy as this and force parsing the response asJson
-```
+```js
 fetch.post.json.asJson('http://some-json.api', {
   body: { some: 'data' },
   method: 'POST'
