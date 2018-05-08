@@ -23,19 +23,19 @@ handy-fetch will function in every environment that supports Map, Symbol, Promis
 
 Using yarn: 
 
-```
+```bash
 yarn add handy-fetch
 ``` 
 Using npm:
 
-```
+```bash
 npm install handy-fetch
 ```
 
 ## Usage
 
 ### Importing
-```
+```js
 import { fetch, createHandyFetch } from 'handy-fetch';
 
 // OR
@@ -48,20 +48,20 @@ const { fetch, createHandyFetch} = require('handy-fetch');
 ### Using Default instance
 
 Using default handy-fetch instance just like normal fetch API
-```
-fetch('http:/google.com')
+```js
+fetch('http://google.com')
 ```
 
 ### Setting Default Options
 
 Create a custom handy-fetch with default options
-```
+```js
 const fetch = createHandyFetch({defaultOptions: {
     headers: { 'Content-Type': 'application/json' }
 }});
 
 fetch('http://some-json.api', {
-  body: JSON.strigify({some:'date'}},
+  body: JSON.stringify({some:'date'}),
   method: 'POST'
 });
 
@@ -69,7 +69,7 @@ fetch('http://some-json.api', {
 
 ### Setting fetch Dependency
 Using createHandyFetch factory
-```
+```js
 const fetch = createHandyFetch({
     fetch: nodeFetch
 });
@@ -78,7 +78,7 @@ fetch('http://some-json.api')
 ```
 
 Using fetch property. it is especially useful when using default handy-fetch instance.
-```
+```js
 fetch.fetch = nodeFetch
 
 fetch('http://some-json.api')
@@ -89,7 +89,7 @@ fetch('http://some-json.api')
 handy-fetch parses response by default. it does it base on response content-type header.
  So you haven't to call `response.json().then()` and so on.
 
-```
+```js
 fetch('http://some-json.api').then((response) => {
   assert(typeof response.body === 'object');
 });
@@ -101,7 +101,7 @@ Helper methods are a group of chain-able methods that help us to
 
 #### JSON Helper
 Post JSON as easy as this. handy-fetch will serialize body and adds content-type for you.
-```
+```js
 fetch.json('http://some-json.api', {
   body: { some: 'data' },
   method: 'POST'
@@ -110,7 +110,7 @@ fetch.json('http://some-json.api', {
 
 #### asJSON Helper
 Force parsing response as JSON. asJson also adds `Accept: 'application/json'` in request header
-```
+```js
 fetch.asJson('http://some-json.api', {
   body: { some: 'data' },
   method: 'POST'
@@ -119,7 +119,7 @@ fetch.asJson('http://some-json.api', {
 
 #### Verbs Helpers
 Helper methods for http verb including get, post, put, path, delete & head
-```
+```js
 fetch.post('http://some-json.api', {
   body: formData
 });
@@ -154,7 +154,7 @@ Default: based on Content-Type header and then defaults to text
 
 **note:** buffer is node-fetch specific
 
-```
+```js
 fetch.json('http://some-json.api', {
   body: { some: 'data' },
   method: 'POST',
@@ -171,12 +171,12 @@ Accepts: boolean(true, false) or function
 
 default: true
 
-```
+```js
 fetch('http://some-json.api', {
     shouldParseBody: false
 }).then((response) => {
     assert(response.body === null);
-    return response.josn(); // consuming body later
+    return response.json(); // consuming body later
 }).then((response) => {
     // body is parsed now!
     assert(typeof response.body === 'object');
@@ -184,7 +184,7 @@ fetch('http://some-json.api', {
 ```
 
 Use a function when you want to determine if parse body or not based on request options and response
-```
+```js
 fetch('http://some-json.api', {
     shouldParseBody: (response, options) =>
         response.status !== 204
@@ -195,12 +195,12 @@ fetch('http://some-json.api', {
 Defines an alias for a set of chained methods
 
 .e.g
-```
+```js
 fetch.alias('rest', fetch.json.asJson)
 ```
 
 Then we have a rest helper method that functions as same as fetch.json.asJson.
-```
+```js
 fetch.rest('http://some-json.api')
     .then((response) => {
         // lets have fun :D
@@ -215,7 +215,7 @@ applies a predefined group of helper methods on every request.
 The default set of helper methods is equal to `base` alias
 
 It defined as following:
-```
+```js
 fetcher.alias('default', fetcher.base, true);
 ```
 
@@ -225,7 +225,7 @@ You can redefine default alis to change default behavior.
 
 This will call credentials helper on all request.
 
-```
+```js
 fetcher.alias('default', fetcher.base.credentials, true);
 ```
 
@@ -237,19 +237,19 @@ Base alias is an alias to a group of helper methods. It includes
 most of handy-fetch functionality.
 
 It defined as following:
-```
+```js
 fetcher.alias('base', fetcher.options.response.bodyParser.httpErrors, true);
 ```
 
 ### Error handling
 There are few helper functions on `catchers` named export.
 check them on `test` directory
-```
+```js
 fetch('http://some-json.api')
     .catch(catchers.notFound((err) => {
         console.log('her this is a 404!');
         assert(err.response.body === 'string');
-    })
+    }))
 ```
 
 ### Plugin API
@@ -258,7 +258,7 @@ Check plugin api on `test` directory and base plugins on `src/plugins`
 
 For example this is asJson plugin
 
-```
+```js
 fetch.use(() => ({
     // the helper method name
     name: 'asJson',
