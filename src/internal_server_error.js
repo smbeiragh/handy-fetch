@@ -6,13 +6,41 @@ const statusToString = {
 };
 
 function InternalServerError(response) {
-  this.getResponse = function getResponse() {
-    return response;
-  };
+  Error.call(this);
+  Object.defineProperties(this, {
+    getResponse: {
+      value: function getResponse() {
+        return response;
+      },
+      enumerable: false,
+      writable: true,
+      configurable: true,
+    },
+    message: {
+      get: () => this.toReadableString(),
+      configurable: true,
+    },
+  });
+
+  /* istanbul ignore else  */
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, this.constructor);
+  } else {
+    Object.defineProperty(this, 'stack', {
+      value: (new Error()).stack,
+      enumerable: false,
+      writable: true,
+      configurable: true,
+    });
+  }
 }
 
+InternalServerError.prototype = Object.create(Error.prototype);
+InternalServerError.prototype.constructor = InternalServerError;
+InternalServerError.prototype.name = 'InternalServerError';
+
 InternalServerError.prototype = Object.assign(InternalServerError.prototype, {
-  toString() {
+  toReadableString() {
     const response = this.getResponse();
     const readableName = statusToString[response.status];
     if (readableName) {

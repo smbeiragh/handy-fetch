@@ -7,13 +7,41 @@ const statusToString = {
 };
 
 function BadRequestError(response) {
-  this.getResponse = function getResponse() {
-    return response;
-  };
+  Error.call(this);
+  Object.defineProperties(this, {
+    getResponse: {
+      value: function getResponse() {
+        return response;
+      },
+      enumerable: false,
+      writable: true,
+      configurable: true,
+    },
+    message: {
+      get: () => this.toReadableString(),
+      configurable: true,
+    },
+  });
+
+  /* istanbul ignore else  */
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, this.constructor);
+  } else {
+    Object.defineProperty(this, 'stack', {
+      value: (new Error()).stack,
+      enumerable: false,
+      writable: true,
+      configurable: true,
+    });
+  }
 }
 
+BadRequestError.prototype = Object.create(Error.prototype);
+BadRequestError.prototype.constructor = BadRequestError;
+BadRequestError.prototype.name = 'BadRequestError';
+
 BadRequestError.prototype = Object.assign(BadRequestError.prototype, {
-  toString() {
+  toReadableString() {
     const response = this.getResponse();
     const readableName = statusToString[response.status];
     if (readableName) {

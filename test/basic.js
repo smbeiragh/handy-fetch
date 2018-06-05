@@ -94,6 +94,8 @@ describe('Basic Tests', () => {
       const resolver = chai.spy(() => {});
       const catcher = chai.spy((error) => {
         expect(isBadRequestError(error), 'expect error to be BadRequestError').to.equal(true);
+        expect(error.message).to.be.a('string');
+        expect(error.stack).to.be.a('string');
         expect(
           error.getResponse().body,
           `expect response.body to be '${expectedResponse}'`,
@@ -142,41 +144,43 @@ describe('Basic Tests', () => {
         fetch('http://www.test.com/e400')
           .catch((error) => {
             expect(error.isBadRequest(), 'expect BadRequest be General Bad Request error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('BadRequestError [400 - General Bad Request]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('BadRequestError [400 - General Bad Request]');
           }),
         fetch('http://www.test.com/e401')
           .catch((error) => {
             expect(error.isUnauthorized(), 'expect BadRequest be Unauthorized error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('BadRequestError [401 - Unauthorized]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('BadRequestError [401 - Unauthorized]');
           }),
         fetch('http://www.test.com/e402')
           .catch((error) => {
-            expect(error.toString(), 'expect readable string').to.equal('BadRequestError [402]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('BadRequestError [402]');
           }),
         fetch('http://www.test.com/e403')
           .catch((error) => {
             expect(error.isForbidden(), 'expect BadRequest be Access Forbidden error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('BadRequestError [403 - Access Forbidden]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('BadRequestError [403 - Access Forbidden]');
           }),
         fetch('http://www.test.com/e404')
           .catch((error) => {
             expect(error.isNotFound(), 'expect BadRequest be Not Found error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('BadRequestError [404 - Not Found]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('BadRequestError [404 - Not Found]');
           }),
         fetch('http://www.test.com/e422')
           .catch((error) => {
             expect(error.isUnprocessableEntity(), 'expect BadRequest be Unprocessable Entity error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('BadRequestError [422 - Unprocessable Entity]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('BadRequestError [422 - Unprocessable Entity]');
           }),
       ]);
     });
 
-    it('should throw BadRequestError on 5XX status code', () => {
+    it('should throw InternalServerError on 5XX status code', () => {
       const expectedResponse = 'An unknown server Error!';
 
       const resolver = chai.spy(() => {});
       const catcher = chai.spy((error) => {
         expect(isInternalServerError(error), 'expect error to be InternalServerError').to.equal(true);
+        expect(error.message).to.be.a('string');
+        expect(error.stack).to.be.a('string');
         expect(
           error.getResponse().body,
           `expect response.body to be '${expectedResponse}'`,
@@ -221,26 +225,26 @@ describe('Basic Tests', () => {
         fetch('http://www.test.com/e500')
           .catch((error) => {
             expect(error.isInternalServerError(), 'expect error be Internal Server Error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('InternalServerError [500 - Internal Server Error]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('InternalServerError [500 - Internal Server Error]');
           }),
         fetch('http://www.test.com/e501')
           .catch((error) => {
-            expect(error.toString(), 'expect readable string').to.equal('InternalServerError [501]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('InternalServerError [501]');
           }),
         fetch('http://www.test.com/e502')
           .catch((error) => {
             expect(error.isBadGateway(), 'expect error be Bad Gateway error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('InternalServerError [502 - Bad Gateway]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('InternalServerError [502 - Bad Gateway]');
           }),
         fetch('http://www.test.com/e503')
           .catch((error) => {
             expect(error.isServiceUnavailable(), 'expect error be Service Unavailable error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('InternalServerError [503 - Service Unavailable]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('InternalServerError [503 - Service Unavailable]');
           }),
         fetch('http://www.test.com/e504')
           .catch((error) => {
             expect(error.isGatewayTimeOut(), 'expect error be Gateway TimeOut error').to.equal(true);
-            expect(error.toString(), 'expect readable string').to.equal('InternalServerError [504 - Gateway TimeOut]');
+            expect(error.toReadableString(), 'expect readable string').to.equal('InternalServerError [504 - Gateway TimeOut]');
           }),
       ]);
     });
