@@ -112,8 +112,8 @@ export default {
   catchStatusCode(statusCode, cb) {
     return catcherFactory(
       error => (
-        (isBadRequestError(error) || isInternalServerError(error)) &&
-        error.getResponse().status === statusCode
+        (isBadRequestError(error) || isInternalServerError(error))
+        && error.getResponse().status === statusCode
       ),
       cb,
     );

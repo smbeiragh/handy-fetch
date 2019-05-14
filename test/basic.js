@@ -2,7 +2,9 @@ import chai, { expect } from 'chai';
 import spies from 'chai-spies';
 import nock from 'nock';
 import nodeFetch from 'node-fetch';
-import { fetch, isBadRequestError, isInternalServerError, isHttpResponse, createHandyFetch, catchers } from './../src';
+import {
+  fetch, isBadRequestError, isInternalServerError, isHttpResponse, createHandyFetch, catchers,
+} from '../src';
 
 chai.use(spies);
 

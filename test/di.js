@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import spies from 'chai-spies';
 import nock from 'nock';
 import nodeFetch from 'node-fetch';
-import { createHandyFetch, fetch } from './../src';
+import { createHandyFetch, fetch } from '../src';
 
 chai.use(spies);
 

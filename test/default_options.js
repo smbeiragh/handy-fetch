@@ -1,15 +1,16 @@
 import { expect } from 'chai';
 import nock from 'nock';
 import nodeFetch from 'node-fetch';
-import { createHandyFetch } from './../src';
+import { createHandyFetch } from '../src';
 
 global.fetch = nodeFetch; // patch global fetch to simulate browser behavior
 global.Response = nodeFetch.Response;
 global.Headers = nodeFetch.Headers;
 global.Request = nodeFetch.Request;
 
-const fetchWrapper = (url, options) =>
-  nodeFetch(url, { ...options, body: JSON.stringify(options) });
+const fetchWrapper = (url, options) => nodeFetch(
+  url, { ...options, body: JSON.stringify(options) },
+);
 
 // TODO test default options
 describe('Default Options', () => {

@@ -1,15 +1,15 @@
 function isHeaderObject(obj) {
   return (
-    typeof obj === 'object' &&
-    typeof obj.append === 'function' &&
-    typeof obj.delete === 'function' &&
-    typeof obj.entries === 'function' &&
-    typeof obj.forEach === 'function' &&
-    typeof obj.get === 'function' &&
-    typeof obj.has === 'function' &&
-    typeof obj.keys === 'function' &&
-    typeof obj.set === 'function' &&
-    typeof obj.values === 'function'
+    typeof obj === 'object'
+    && typeof obj.append === 'function'
+    && typeof obj.delete === 'function'
+    && typeof obj.entries === 'function'
+    && typeof obj.forEach === 'function'
+    && typeof obj.get === 'function'
+    && typeof obj.has === 'function'
+    && typeof obj.keys === 'function'
+    && typeof obj.set === 'function'
+    && typeof obj.values === 'function'
   );
 }
 
@@ -34,7 +34,7 @@ function getRaw(headers) {
     };
     headers.forEach(process);
     return raw;
-  } else if (typeof headers === 'object') {
+  } if (typeof headers === 'object') {
     const raw = {};
     const keys = Object.keys(headers);
     keys.forEach((key) => {

@@ -1,9 +1,10 @@
-import { createResponse } from './../response';
+import { createResponse } from '../response';
 
 const response = () => ({
   name: 'response',
-  onReturn: (promise, { options }) =>
-    promise.then(orgResponse => createResponse(orgResponse, options)),
+  onReturn: (promise, { options }) => promise.then(
+    orgResponse => createResponse(orgResponse, options),
+  ),
 });
 
 export default response;
