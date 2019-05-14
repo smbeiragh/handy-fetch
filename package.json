@@ -20,44 +20,35 @@
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix",
     "prepare": "yarn run rollup",
-    "prepublishOnly": "yarn run rollup",
-    "commit": "git-cz"
+    "prepublishOnly": "yarn run rollup"
   },
   "files": [
     "build/handy_fetch.js",
     "build/handy_fetch.es.js"
   ],
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-istanbul": "^4.1.6",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-register": "^6.26.0",
-    "chai": "^4.1.2",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-external-helpers": "^7.2.0",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/register": "^7.4.4",
+    "babel-plugin-istanbul": "^5.1.4",
+    "chai": "^4.2.0",
     "chai-spies": "^1.0.0",
-    "commitizen": "^2.9.6",
-    "cz-conventional-changelog": "^2.1.0",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^16.1.0",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.7.0",
-    "mocha": "^5.1.1",
-    "nock": "^9.2.5",
-    "node-fetch": "^2.1.2",
-    "nyc": "^11.7.1",
-    "rollup": "^0.58.2",
-    "rollup-plugin-babel": "^3.0.4",
-    "rollup-plugin-uglify": "^3.0.0"
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.13.0",
+    "mocha": "^6.1.4",
+    "nock": "^10.0.6",
+    "node-fetch": "^2.5.0",
+    "nyc": "^14.1.1",
+    "rollup": "^1.11.3",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-terser": "^4.0.4"
   },
-  "dependencies": {},
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  }
+  "dependencies": {}
 }
