@@ -27,9 +27,9 @@ describe('fetch.use', () => {
         }, 10);
       });
 
-    const onOptions = chai.spy(opt => ({ ...opt, body: expectedBody }));
+    const onOptions = chai.spy((opt) => ({ ...opt, body: expectedBody }));
 
-    const onReturn = chai.spy(response => response);
+    const onReturn = chai.spy((response) => response);
 
     const getChain = chai.spy(() => null); // keep plugin chain untouched by returning null
 
@@ -75,18 +75,18 @@ describe('fetch.use', () => {
 
     fetch.use(() => ({
       name: 'testDuplicate',
-      onOptions: opt => opt,
+      onOptions: (opt) => opt,
     }));
 
     expect(() => fetch.use(() => ({
       name: 'testDuplicate',
-      onOptions: opt => opt,
+      onOptions: (opt) => opt,
     }))).to.throw(Error);
 
     fetch.use(
       () => ({
         name: 'testDuplicate',
-        onOptions: opt => opt,
+        onOptions: (opt) => opt,
       }),
       { replace: true, name: 'testDuplicate' },
     );
@@ -97,7 +97,7 @@ describe('fetch.use', () => {
 
     expect(() => fetch.use(() => ({
       name: 'use',
-      onOptions: opt => opt,
+      onOptions: (opt) => opt,
     }))).to.throw(Error);
   });
 });
@@ -118,7 +118,7 @@ describe('fetch.alias', () => {
         }, 10);
       });
 
-    const onOptions = chai.spy(opt => ({ ...opt, method: 'post', body: expectedBody }));
+    const onOptions = chai.spy((opt) => ({ ...opt, method: 'post', body: expectedBody }));
 
     fetch.use(() => ({
       name: 'test',
@@ -152,7 +152,7 @@ describe('fetch.alias', () => {
         }, 10);
       });
 
-    const onOptions = chai.spy(opt => ({ ...opt, method: 'post', body: expectedBody }));
+    const onOptions = chai.spy((opt) => ({ ...opt, method: 'post', body: expectedBody }));
 
     fetch.use(() => ({
       name: 'test',

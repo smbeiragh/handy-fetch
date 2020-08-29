@@ -13,8 +13,8 @@ const json = () => ({
 
 const asJson = () => ({
   name: 'asJson',
-  onOptions: options => ([options, { shouldParseBody: false, headers: { Accept: 'application/json' } }]),
-  onReturn: promise => promise.then(response => response.json()),
+  onOptions: (options) => ([options, { shouldParseBody: false, headers: { Accept: 'application/json' } }]),
+  onReturn: (promise) => promise.then((response) => response.json()),
 });
 
 export { json, asJson };

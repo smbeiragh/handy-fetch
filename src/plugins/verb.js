@@ -1,6 +1,6 @@
-const methodFactory = method => () => ({
+const methodFactory = (method) => () => ({
   name: method,
-  onOptions: options => [options, { method }],
+  onOptions: (options) => [options, { method }],
 });
 
 const verb = {

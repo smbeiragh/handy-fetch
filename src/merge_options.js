@@ -19,7 +19,7 @@ function getRaw(headers) {
     const process = (value, key) => {
       if (!(key in raw)) {
         if (value.indexOf(',') > -1) {
-          value.split(',').forEach(eachValue => process(eachValue, key));
+          value.split(',').forEach((eachValue) => process(eachValue, key));
         } else {
           raw[key] = value;
         }
@@ -40,7 +40,7 @@ function getRaw(headers) {
     keys.forEach((key) => {
       const rawValue = headers[key];
       const value = Array.isArray(rawValue) ? rawValue : rawValue.split(',');
-      raw[key] = value.length <= 1 ? value[0].trim() : value.map(v => v.trim());
+      raw[key] = value.length <= 1 ? value[0].trim() : value.map((v) => v.trim());
     });
     return raw;
   }
@@ -79,7 +79,7 @@ export default function mergeOptions(...args) {
   args.forEach((arg) => {
     /* istanbul ignore else  */
     if (arg) {
-      const currentRes = Object.assign({}, res, arg);
+      const currentRes = { ...res, ...arg };
       if (arg.headers) {
         currentRes.headers = mergeHeaders(res.headers, arg.headers);
       }

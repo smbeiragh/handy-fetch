@@ -18,7 +18,7 @@ export default {
    * @returns {Function}
    */
   badRequest(cb) {
-    return catcherFactory(error => isBadRequestError(error), cb);
+    return catcherFactory((error) => isBadRequestError(error), cb);
   },
   /**
    * catch status == 400
@@ -26,7 +26,7 @@ export default {
    * @returns {Function}
    */
   generalBadRequest(cb) {
-    return catcherFactory(error => (isBadRequestError(error) && error.isBadRequest()), cb);
+    return catcherFactory((error) => (isBadRequestError(error) && error.isBadRequest()), cb);
   },
   /**
    * catch status == 400
@@ -34,7 +34,7 @@ export default {
    * @returns {Function}
    */
   forbidden(cb) {
-    return catcherFactory(error => (isBadRequestError(error) && error.isForbidden()), cb);
+    return catcherFactory((error) => (isBadRequestError(error) && error.isForbidden()), cb);
   },
   /**
    * catch status == 404
@@ -42,7 +42,7 @@ export default {
    * @returns {Function}
    */
   notFound(cb) {
-    return catcherFactory(error => (isBadRequestError(error) && error.isNotFound()), cb);
+    return catcherFactory((error) => (isBadRequestError(error) && error.isNotFound()), cb);
   },
   /**
    * catch status == 422
@@ -50,7 +50,10 @@ export default {
    * @returns {Function}
    */
   unprocessableEntity(cb) {
-    return catcherFactory(error => (isBadRequestError(error) && error.isUnprocessableEntity()), cb);
+    return catcherFactory(
+      (error) => (isBadRequestError(error) && error.isUnprocessableEntity()),
+      cb,
+    );
   },
   /**
    * catch any internal server error (5XX)
@@ -58,7 +61,7 @@ export default {
    * @returns {Function}
    */
   internalServerError(cb) {
-    return catcherFactory(error => isInternalServerError(error), cb);
+    return catcherFactory((error) => isInternalServerError(error), cb);
   },
   /**
    * catch status == 500
@@ -67,7 +70,7 @@ export default {
    */
   generalInternalServerError(cb) {
     return catcherFactory(
-      error => (isInternalServerError(error) && error.isInternalServerError()),
+      (error) => (isInternalServerError(error) && error.isInternalServerError()),
       cb,
     );
   },
@@ -78,7 +81,7 @@ export default {
    */
   badGateway(cb) {
     return catcherFactory(
-      error => (isInternalServerError(error) && error.isBadGateway()),
+      (error) => (isInternalServerError(error) && error.isBadGateway()),
       cb,
     );
   },
@@ -89,7 +92,7 @@ export default {
    */
   serviceUnavailable(cb) {
     return catcherFactory(
-      error => (isInternalServerError(error) && error.isServiceUnavailable()),
+      (error) => (isInternalServerError(error) && error.isServiceUnavailable()),
       cb,
     );
   },
@@ -100,7 +103,7 @@ export default {
    */
   gatewayTimeOut(cb) {
     return catcherFactory(
-      error => (isInternalServerError(error) && error.isGatewayTimeOut()),
+      (error) => (isInternalServerError(error) && error.isGatewayTimeOut()),
       cb,
     );
   },
@@ -111,7 +114,7 @@ export default {
    */
   catchStatusCode(statusCode, cb) {
     return catcherFactory(
-      error => (
+      (error) => (
         (isBadRequestError(error) || isInternalServerError(error))
         && error.getResponse().status === statusCode
       ),

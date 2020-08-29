@@ -198,7 +198,7 @@ function createChain(fetch, defaultOptions, chainInfo = []) {
 
   defineHelpers(
     chain,
-    pluginsList.filter(name => plugins[name].helper !== false),
+    pluginsList.filter((name) => plugins[name].helper !== false),
     fetch,
     defaultOptions,
   );

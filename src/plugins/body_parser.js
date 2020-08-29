@@ -61,10 +61,9 @@ function resolveParserFunctionName(response, requestOptions) {
   return res || defaultParserFunctionName;
 }
 
-
 const bodyParser = () => ({
   name: 'bodyParser',
-  onOptions: options => [{ shouldParseBody: true }, options],
+  onOptions: (options) => [{ shouldParseBody: true }, options],
   onReturn: (promise, { options }) => promise.then((response) => {
     const { shouldParseBody } = options;
 
