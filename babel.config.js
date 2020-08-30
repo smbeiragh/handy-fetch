@@ -1,4 +1,4 @@
-{
+module.exports = {
   "env": {
     "test": {
       "presets": [
@@ -20,7 +20,8 @@
         ]
       ],
       "plugins": [
-        "babel-plugin-istanbul"
+        "babel-plugin-istanbul",
+        "@babel/plugin-transform-runtime"
       ]
     },
     "production": {
@@ -44,7 +45,8 @@
         ]
       ],
       "plugins": [
+        "@babel/plugin-transform-runtime"
       ]
     }
   }
-}
+};

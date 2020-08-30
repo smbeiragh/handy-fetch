@@ -1,4 +1,6 @@
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import { terser } from "rollup-plugin-terser";
 
 export default {
@@ -9,10 +11,11 @@ export default {
     },
     { file: 'build/handy_fetch.es.js', format: 'es', exports: 'named' },
   ],
-
   plugins: [
+    commonjs(),
+    resolve(),
     babel({
-      runtimeHelpers: true,
+      babelHelpers: "runtime",
     }),
     terser(),
   ],
