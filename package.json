@@ -1,6 +1,6 @@
 {
   "name": "handy-fetch",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "main": "build/handy_fetch.js",
   "module": "build/handy_fetch.es.js",
   "author": "smbeiragh <smbeiragh@gmail.com>",
@@ -27,7 +27,7 @@
     "build/handy_fetch.es.js"
   ],
   "engines": {
-    "node": ">=8"
+    "node": ">=10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.4",
