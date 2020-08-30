@@ -159,6 +159,30 @@ describe('Catchers functionality', () => {
           expect(catcher, 'expect catcher to haven been called').to.have.been.called();
         });
     });
+
+    it('should be resolved after returning inside catcher', () => {
+      const expectedResponse = 'Internal Server Error';
+
+      const expectedResolvedValue = { body: 'ok' };
+      const badRequestCatcher = chai.spy(() => (expectedResolvedValue));
+      const catcher = chai.spy(() => {});
+      const resolved = chai.spy((res) => res);
+
+      nock('http://www.test.com')
+        .get('/resource')
+        .reply(400, expectedResponse);
+
+      return fetch('http://www.test.com/resource')
+        .catch(catchers.badRequest(badRequestCatcher))
+        .catch(catcher)
+        .then(resolved)
+        .then((res) => {
+          expect(badRequestCatcher, 'expect bad request catcher to haven been called').to.have.been.called();
+          expect(catcher, 'expect catcher to haven\'t been called').to.have.not.been.called();
+          expect(resolved, 'expect catcher to haven been called').to.have.been.called();
+          expect(res, `expect resolved to ${JSON.stringify(expectedResolvedValue)}`).to.equal(expectedResolvedValue);
+        });
+    });
   });
 
   describe('catchers.generalBadRequest', () => {

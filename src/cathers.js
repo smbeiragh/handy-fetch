@@ -4,10 +4,9 @@ import { isInternalServerError } from './internal_server_error';
 function catcherFactory(condition, cb) {
   return function catcher(error) {
     if (condition(error)) {
-      cb(error);
-    } else {
-      throw error;
+      return cb(error);
     }
+    throw error;
   };
 }
 
