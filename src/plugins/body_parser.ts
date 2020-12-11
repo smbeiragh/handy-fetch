@@ -1,4 +1,6 @@
-const mapAsParamToParserFunction = new Map([
+import {IPluginFactory, IFetchOptions, IHttpResponse} from "../types";
+
+const mapAsParamToParserFunction = new Map<string, TParserName>([
   ['json', 'json'],
   ['text', 'text'],
   ['blob', 'blob'],
@@ -6,14 +8,16 @@ const mapAsParamToParserFunction = new Map([
   ['buffer', 'buffer'], // node-fetch (non-spec api)
 ]);
 
-function resolveAsParam(as) {
+function resolveAsParam(as?: string | null): TParserName | null {
   if (typeof as === 'string') {
     return mapAsParamToParserFunction.get(as) || null;
   }
   return null;
 }
 
-function resolveContentType(contentType) {
+type TParserName = keyof IHttpResponse;
+
+function resolveContentType(contentType: string): TParserName | null {
   const ct = contentType || '';
   if (ct.indexOf('application/json') > -1) {
     return 'json';
@@ -39,10 +43,10 @@ function resolveContentType(contentType) {
   return null;
 }
 
-const defaultParserFunctionName = 'text';
+const defaultParserFunctionName: TParserName = 'text';
 
-function resolveParserFunctionName(response, requestOptions) {
-  const contentType = response.headers['content-type'];
+function resolveParserFunctionName(response: IHttpResponse, requestOptions: IFetchOptions): TParserName  {
+  const contentType = 'content-type' in response.headers ? response.headers['content-type'] : '';
   let res = null;
 
   /* istanbul ignore else  */
@@ -58,13 +62,13 @@ function resolveParserFunctionName(response, requestOptions) {
     res = resolveContentType(contentType);
   }
 
-  return res || defaultParserFunctionName;
+  return (typeof res !== "undefined" && res !== null) ? res : defaultParserFunctionName;
 }
 
-const bodyParser = () => ({
+const bodyParser: IPluginFactory = ({mergeOptions}) => ({
   name: 'bodyParser',
-  onOptions: (options) => [{ shouldParseBody: true }, options],
-  onReturn: (promise, { options }) => promise.then((response) => {
+  onOptions: (options) => mergeOptions({ shouldParseBody: true }, options),
+  onReturn: (promise: Promise<IHttpResponse>, { options }) => promise.then((response) => {
     const { shouldParseBody } = options;
 
     if (

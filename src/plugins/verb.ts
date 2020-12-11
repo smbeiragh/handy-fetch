@@ -1,6 +1,8 @@
-const methodFactory = (method) => () => ({
+import {IPluginFactory} from "../types";
+
+const methodFactory = (method: string): IPluginFactory => ({mergeOptions}) => ({
   name: method,
-  onOptions: (options) => [options, { method }],
+  onOptions: (options) => mergeOptions(options, { method }),
 });
 
 const verb = {

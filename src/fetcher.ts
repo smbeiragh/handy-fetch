@@ -1,26 +1,58 @@
+import {
+  CHAIN_INTERNALS,
+  INTERNALS,
+  TFilters,
+  IFetchOptions,
+  IPlugin,
+  IChain,
+  IFetch,
+  TChainInfo,
+  IPluginsBag,
+  IPluginFactory,
+  IFetchInternals,
+  IFetchWithInternals,
+  IFilter
+} from "./types";
 import merge from './merge_options';
 
-const INTERNALS = Symbol('Handy Fetch - Fetcher Internals');
-const CHAIN_INTERNALS = Symbol('Handy Fetch - Chain Info');
+
 const RESERVED_NAMES = ['use', 'alias', 'clone'];
 
-function applyFilter({
-  filter, value, extras, plugins, each,
-}) {
+function applyFilter<TValue, TExtras>(
+  {filter, value, extras, plugins}:
+    {filter: TFilters, value: TValue, extras: TExtras, plugins: IPlugin[]}): TValue {
   let val = value;
   for (let i = 0, l = plugins.length; i < l; i += 1) {
-    const theFilter = plugins[i][filter];
+    const theFilter: IFilter<TValue, TExtras> = plugins[i][filter] as IFilter<TValue, TExtras>;
     if (theFilter) {
       val = theFilter(val, extras);
-      if (typeof each === 'function') {
-        val = each(val);
-      }
     }
   }
   return val;
 }
 
-function preProcessChain(chainInfo, plugins) {
+function applyPlugins(url: string, options: IFetchOptions, defaultOptions: IFetchOptions, fetcher: IFetch, plugins: IPlugin[]) {
+  const opt = applyFilter<IFetchOptions, { defaultOptions: IFetchOptions }>({
+    filter: 'onOptions', value: options, extras: { defaultOptions }, plugins
+  });
+
+  return applyFilter<Promise<any>, {options : IFetchOptions, defaultOptions: IFetchOptions}>({
+    filter: 'onReturn',
+    value: fetcher(url, opt as IFetchOptions),
+    extras: { options: opt, defaultOptions },
+    plugins,
+  });
+}
+
+function getApplicablePlugins(chainInfo: TChainInfo, plugins: IPluginsBag) {
+  const applicablePlugins = [];
+  for (let i = 0, l = chainInfo.length; i < l; i += 1) {
+    applicablePlugins.push(plugins[chainInfo[i].method]);
+  }
+  return applicablePlugins;
+}
+
+function preProcessChain(chainInfo: TChainInfo, plugins: IPluginsBag) {
   const result = [...chainInfo];
   let i = 0;
   let l = result.length;
@@ -44,41 +76,13 @@ function preProcessChain(chainInfo, plugins) {
   return result;
 }
 
-function eachOption(options) {
-  if (options instanceof Array) {
-    return merge(...options);
-  }
-  return options;
-}
-
-function applyPlugins(url, options, defaultOptions, fetcher, plugins) {
-  const opt = applyFilter({
-    filter: 'onOptions', value: options, extras: { defaultOptions }, plugins, each: eachOption,
-  });
-
-  return applyFilter({
-    filter: 'onReturn',
-    value: fetcher(url, opt),
-    extras: { options: opt, defaultOptions },
-    plugins,
-  });
-}
-
-function getApplicablePlugins(chainInfo, plugins) {
-  const applicablePlugins = [];
-  for (let i = 0, l = chainInfo.length; i < l; i += 1) {
-    applicablePlugins.push(plugins[chainInfo[i].method]);
-  }
-  return applicablePlugins;
-}
-
-function checkReservedNames(name) {
+function checkReservedNames(name: string) {
   if (RESERVED_NAMES.indexOf(name) > -1) {
     throw new Error(`'${name}' is a reserved name`);
   }
 }
 
-function checkNameAvailability(chain, name, replace) {
+function checkNameAvailability(chain: IChain, name: string, replace?: () => void) {
   if (name in chain) {
     if (!replace) {
       throw new Error(`${name} already exists`);
@@ -88,12 +92,12 @@ function checkNameAvailability(chain, name, replace) {
   }
 }
 
-function enqueuePlugin(name, chainInfo) {
+function enqueuePlugin(name: string, chainInfo: TChainInfo) {
   chainInfo.push({ method: name });
   return chainInfo;
 }
 
-function chainClone(shallow) {
+function chainClone(this:IChain ,shallow : boolean) {
   const { chainInfo, fetch } = this[CHAIN_INTERNALS];
   // clone as soon as possible
   const clonedChainInfo = [...chainInfo];
@@ -105,10 +109,10 @@ function chainClone(shallow) {
     };
   }
   /* eslint-disable-next-line no-use-before-define */
-  return createChain(fetch, fetch[INTERNALS].defaultOptions, chainInfo);
+  return createChain(fetch, fetch[INTERNALS]?.defaultOptions, chainInfo);
 }
 
-function defineHelpers(chain, helpers, fetcher, defaultOptions) {
+function defineHelpers(chain: IChain, helpers: string[], fetcher: IFetch, defaultOptions: IFetchOptions) {
   for (let i = 0, l = helpers.length; i < l; i += 1) {
     const name = helpers[i];
     Object.defineProperty(chain, name, {
@@ -125,11 +129,11 @@ function defineHelpers(chain, helpers, fetcher, defaultOptions) {
   }
 }
 
-function chainUse(plugin, { name, replace } = {}) {
+function chainUse(this: IChain, plugin: IPluginFactory, { name , replace } : { name?: string, replace?: ()=>{} }) {
   const chain = this;
   const { fetch } = chain[CHAIN_INTERNALS];
   const { plugins, pluginsList, defaultOptions } = fetch[INTERNALS];
-  const thePlugin = plugin({ fetch: chain });
+  const thePlugin = plugin({ fetch: chain, mergeOptions: merge });
   const theName = name || thePlugin.name;
 
   checkReservedNames(theName);
@@ -154,7 +158,7 @@ function chainUse(plugin, { name, replace } = {}) {
   return chain;
 }
 
-function chainAlias(alias, targetChain, replace) {
+function chainAlias(this: IChain, alias: string, targetChain: IChain, replace? : ()=>{}): IChain {
   const clonedTargetChain = targetChain.clone(true);
   this.use(() => ({
     name: alias,
@@ -163,25 +167,33 @@ function chainAlias(alias, targetChain, replace) {
   return this;
 }
 
-function createChain(fetch, defaultOptions, chainInfo = []) {
+function createChain(fetch: IFetch, defaultOptions: IFetchOptions, chainInfo: TChainInfo = []): IChain {
   const iChainInfo = [...chainInfo];
   const hasInternals = (INTERNALS in fetch);
   // wrap fetch to avoid modifying arguments
-  const theFetch = hasInternals ? fetch : (url, options) => fetch(url, options);
+  const theFetch: IFetch = hasInternals ? fetch : (url: string, options? : IFetchOptions) => fetch(url, options);
 
-  const { plugins, pluginsList } = hasInternals
+  if(!hasInternals) {
+    theFetch[INTERNALS] = { plugins: {}, pluginsList: [], defaultOptions }
+  }
+
+  const { plugins, pluginsList } = (
+    hasInternals
     ? fetch[INTERNALS]
-    : theFetch[INTERNALS] = { plugins: {}, pluginsList: [], defaultOptions };
+    : theFetch[INTERNALS]
+  ) as IFetchInternals;
 
-  const chain = (url, options) => {
+  const chainConstructor: IFetch = (url, options = {}) => {
     const pChainInfo = preProcessChain(iChainInfo, plugins);
     const applicablePlugins = getApplicablePlugins(pChainInfo, plugins);
     return applyPlugins(url, options, defaultOptions, fetch, applicablePlugins);
   };
 
+  const chain = chainConstructor as IChain;
+
   chain[CHAIN_INTERNALS] = {
     get chainInfo() { return iChainInfo; },
-    get fetch() { return theFetch; },
+    get fetch() { return theFetch as IFetchWithInternals },
   };
 
   chain.clone = chainClone;
@@ -198,7 +210,7 @@ function createChain(fetch, defaultOptions, chainInfo = []) {
 
   defineHelpers(
     chain,
-    pluginsList.filter((name) => plugins[name].helper !== false),
+    pluginsList.filter((name : string) => plugins[name].helper !== false),
     fetch,
     defaultOptions,
   );
@@ -206,6 +218,7 @@ function createChain(fetch, defaultOptions, chainInfo = []) {
   return chain;
 }
 
-const createFetcher = (fetch, defaultOptions) => createChain(fetch, defaultOptions);
+
+const createFetcher = (fetch : IFetch, defaultOptions: IFetchOptions) => createChain(fetch, defaultOptions);
 
 export default createFetcher;

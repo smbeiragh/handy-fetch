@@ -2,6 +2,7 @@ module.exports = {
   "env": {
     "test": {
       "presets": [
+        "@babel/preset-typescript",
         [
           "@babel/env",
           {
@@ -26,6 +27,7 @@ module.exports = {
     },
     "production": {
       "presets": [
+        "@babel/preset-typescript",
         [
           "@babel/env",
           {

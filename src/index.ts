@@ -9,12 +9,16 @@ import httpErrors from './plugins/http_errors';
 import optionsPlugin from './plugins/options';
 import bodyParser from './plugins/body_parser';
 import verb from './plugins/verb';
+import {IChain} from "./types";
 
 const getGlobalFetch = () => (typeof fetch !== 'undefined' ? fetch : null);
 
 function createHandyFetch({ fetch = getGlobalFetch(), defaultOptions = {} } = {}) {
-  const fetcher = createFetcher((url, options) => {
+  const fetcher = createFetcher((url, options = {}) => {
     const fetchModule = fetch || fetcher.fetch || getGlobalFetch();
+    if(typeof fetchModule !== "function") {
+      throw new Error("Fetch API Not Exits!");
+    }
     return fetchModule(url, options);
   }, defaultOptions);
 
@@ -38,7 +42,7 @@ function createHandyFetch({ fetch = getGlobalFetch(), defaultOptions = {} } = {}
   return fetcher;
 }
 
-const defaultFetch = createHandyFetch();
+const defaultFetch: IChain = createHandyFetch();
 
 export {
   createHandyFetch,

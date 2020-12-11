@@ -1,3 +1,6 @@
+import {IHttpResponse, IInternalServerError} from "./types";
+import {Interface} from "readline";
+
 const statusToString = {
   500: 'Internal Server Error',
   502: 'Bad Gateway',
@@ -5,7 +8,11 @@ const statusToString = {
   504: 'Gateway TimeOut',
 };
 
-function InternalServerError(response) {
+interface IInternalServerErrorConstructor {
+  new(response: IHttpResponse): IInternalServerError;
+}
+
+const InternalServerError = function InternalServerError(this: IInternalServerError, response: IHttpResponse) {
   Error.call(this);
   Object.defineProperties(this, {
     getResponse: {
@@ -33,43 +40,52 @@ function InternalServerError(response) {
       configurable: true,
     });
   }
-}
+} as any as IInternalServerErrorConstructor;
 
-InternalServerError.prototype = Object.create(Error.prototype);
+InternalServerError.prototype = Object.create(
+  Error.prototype,
+  {
+    name: {
+      writable: false,
+      configurable: false,
+      value: 'InternalServerError'
+    }
+  }
+);
+
 InternalServerError.prototype.constructor = InternalServerError;
-InternalServerError.prototype.name = 'InternalServerError';
 
 InternalServerError.prototype = Object.assign(InternalServerError.prototype, {
-  toReadableString() {
+  toReadableString(this: IInternalServerError) {
     const response = this.getResponse();
-    const readableName = statusToString[response.status];
+    const readableName = statusToString[response.status as keyof typeof statusToString];
     if (readableName) {
       return `InternalServerError [${response.status} - ${readableName}]`;
     }
     return `InternalServerError [${response.status}]`;
   },
-  isInternalServerError() {
+  isInternalServerError(this: IInternalServerError) {
     const response = this.getResponse();
     return response.status === 500;
   },
-  isBadGateway() {
+  isBadGateway(this: IInternalServerError) {
     const response = this.getResponse();
     return response.status === 502;
   },
-  isServiceUnavailable() {
+  isServiceUnavailable(this: IInternalServerError) {
     const response = this.getResponse();
     return response.status === 503;
   },
-  isGatewayTimeOut() {
+  isGatewayTimeOut(this: IInternalServerError) {
     const response = this.getResponse();
     return response.status === 504;
   },
 });
 
-export function createInternalServerError(response) {
-  return new InternalServerError(response);
+export function createInternalServerError(response: IHttpResponse): IInternalServerError {
+  return new InternalServerError(response) as IInternalServerError;
 }
 
-export function isInternalServerError(obj) {
+export function isInternalServerError(obj: any): boolean {
   return obj instanceof InternalServerError;
 }

@@ -4,7 +4,7 @@ import nock from 'nock';
 import nodeFetch from 'node-fetch';
 import {
   fetch, isBadRequestError, isInternalServerError, isHttpResponse, createHandyFetch, catchers,
-} from '../src';
+} from '../src/index';
 
 chai.use(spies);
 

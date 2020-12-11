@@ -1,8 +1,9 @@
 import { isBadRequestError } from './bad_request_error';
 import { isInternalServerError } from './internal_server_error';
+import {IHttpError, IBadRequestError, IInternalServerError, TErrorCB} from "./types";
 
-function catcherFactory(condition, cb) {
-  return function catcher(error) {
+function catcherFactory<TError>(condition :(error : any) => boolean, cb: (error: TError) => any) {
+  return function catcher(error: any) {
     if (condition(error)) {
       return cb(error);
     }
@@ -16,7 +17,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  badRequest(cb) {
+  badRequest(cb: TErrorCB<IBadRequestError>) {
     return catcherFactory((error) => isBadRequestError(error), cb);
   },
   /**
@@ -24,7 +25,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  generalBadRequest(cb) {
+  generalBadRequest(cb: TErrorCB<IBadRequestError>) {
     return catcherFactory((error) => (isBadRequestError(error) && error.isBadRequest()), cb);
   },
   /**
@@ -32,7 +33,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  forbidden(cb) {
+  forbidden(cb: TErrorCB<IBadRequestError>) {
     return catcherFactory((error) => (isBadRequestError(error) && error.isForbidden()), cb);
   },
   /**
@@ -40,7 +41,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  notFound(cb) {
+  notFound(cb: TErrorCB<IBadRequestError>) {
     return catcherFactory((error) => (isBadRequestError(error) && error.isNotFound()), cb);
   },
   /**
@@ -48,7 +49,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  unprocessableEntity(cb) {
+  unprocessableEntity(cb: TErrorCB<IBadRequestError>) {
     return catcherFactory(
       (error) => (isBadRequestError(error) && error.isUnprocessableEntity()),
       cb,
@@ -59,7 +60,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  internalServerError(cb) {
+  internalServerError(cb: TErrorCB<IInternalServerError>) {
     return catcherFactory((error) => isInternalServerError(error), cb);
   },
   /**
@@ -67,7 +68,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  generalInternalServerError(cb) {
+  generalInternalServerError(cb: TErrorCB<IInternalServerError>) {
     return catcherFactory(
       (error) => (isInternalServerError(error) && error.isInternalServerError()),
       cb,
@@ -78,7 +79,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  badGateway(cb) {
+  badGateway(cb: TErrorCB<IInternalServerError>) {
     return catcherFactory(
       (error) => (isInternalServerError(error) && error.isBadGateway()),
       cb,
@@ -89,7 +90,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  serviceUnavailable(cb) {
+  serviceUnavailable(cb: TErrorCB<IInternalServerError>) {
     return catcherFactory(
       (error) => (isInternalServerError(error) && error.isServiceUnavailable()),
       cb,
@@ -100,7 +101,7 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  gatewayTimeOut(cb) {
+  gatewayTimeOut(cb: TErrorCB<IInternalServerError>) {
     return catcherFactory(
       (error) => (isInternalServerError(error) && error.isGatewayTimeOut()),
       cb,
@@ -111,11 +112,11 @@ export default {
    * @param cb
    * @returns {Function}
    */
-  catchStatusCode(statusCode, cb) {
+  catchStatusCode(statusCode: number, cb: TErrorCB<IHttpError>) {
     return catcherFactory(
       (error) => (
         (isBadRequestError(error) || isInternalServerError(error))
-        && error.getResponse().status === statusCode
+        && (error as IHttpError).getResponse().status === statusCode
       ),
       cb,
     );

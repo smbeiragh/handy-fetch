@@ -1,4 +1,7 @@
-function isHeaderObject(obj) {
+import {IFetchOptions, THeaders} from "./types";
+
+function isHeaderObject(headers: unknown) {
+  const obj = headers as Headers;
   return (
     typeof obj === 'object'
     && typeof obj.append === 'function'
@@ -13,10 +16,10 @@ function isHeaderObject(obj) {
   );
 }
 
-function getRaw(headers) {
+function getRaw(headers: THeaders) {
   if (isHeaderObject(headers)) {
-    const raw = {};
-    const process = (value, key) => {
+    const raw: THeaders = {};
+    const process = (value: string, key: string) => {
       if (!(key in raw)) {
         if (value.indexOf(',') > -1) {
           value.split(',').forEach((eachValue) => process(eachValue, key));
@@ -28,58 +31,58 @@ function getRaw(headers) {
         if (Array.isArray(oldValue)) {
           oldValue.push(value);
         } else {
-          raw[key] = [oldValue, value];
+          raw[key] = [oldValue, value].join(",");
         }
       }
     };
-    headers.forEach(process);
+    (headers as Headers).forEach(process);
     return raw;
   } if (typeof headers === 'object') {
-    const raw = {};
+    const raw: THeaders = {};
     const keys = Object.keys(headers);
     keys.forEach((key) => {
-      const rawValue = headers[key];
-      const value = Array.isArray(rawValue) ? rawValue : rawValue.split(',');
-      raw[key] = value.length <= 1 ? value[0].trim() : value.map((v) => v.trim());
+      const rawValue = headers[key as keyof typeof headers];
+      const value = Array.isArray(rawValue) ? rawValue : (rawValue as string).split(',');
+      raw[key] = value.length <= 1 ? value[0].trim() : (value as string[]).map((v) => v.trim());
     });
     return raw;
   }
   return null;
 }
 
-function mergeHeaders(headers1, headers2) {
+function mergeHeaders(headers1: THeaders = {} , headers2: THeaders = {}) {
   const rawHeaders1 = getRaw(headers1);
   const rawHeaders2 = getRaw(headers2);
-  const res = {};
+  const res: THeaders = {};
 
   if (!rawHeaders1 || !rawHeaders2) {
-    return rawHeaders1 || rawHeaders2;
+    return rawHeaders1 || rawHeaders2 || undefined;
   }
 
   const keys = Object.keys(rawHeaders1);
 
   keys.forEach((key) => {
     const value = rawHeaders1[key];
-    res[key] = Array.isArray(value) ? [...value] : value;
+    res[key as keyof typeof rawHeaders1] = Array.isArray(value) ? value.join(",") : value;
   });
 
   const keys2 = Object.keys(rawHeaders2);
 
   keys2.forEach((key) => {
     const value = rawHeaders2[key];
-    res[key] = Array.isArray(value) ? [...value] : value;
+    res[key as keyof typeof rawHeaders1] = Array.isArray(value) ? value.join(",") : value;
   });
 
   return res;
 }
 
-export default function mergeOptions(...args) {
-  let res = {};
+export default function mergeOptions(...args: IFetchOptions[]) : IFetchOptions {
+  let res: IFetchOptions = {};
 
   args.forEach((arg) => {
     /* istanbul ignore else  */
     if (arg) {
-      const currentRes = { ...res, ...arg };
+      const currentRes: IFetchOptions = { ...res, ...arg };
       if (arg.headers) {
         currentRes.headers = mergeHeaders(res.headers, arg.headers);
       }

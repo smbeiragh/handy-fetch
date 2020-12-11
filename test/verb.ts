@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import nock from 'nock';
 import nodeFetch from 'node-fetch';
-import { fetch } from '../src';
+import { fetch } from '../src/index';
 
 global.fetch = nodeFetch; // patch global fetch to simulate browser behavior
 global.Response = nodeFetch.Response;
